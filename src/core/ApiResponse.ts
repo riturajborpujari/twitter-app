@@ -1,5 +1,6 @@
 import {Response} from 'express';
 import httpStatus from 'http-status-codes';
+import { MongooseValidationError, IValidationError } from './ApiError';
 
 abstract class ApiResponse{
     constructor(protected status: number, protected message: string) { }
@@ -50,3 +51,12 @@ export class InternalErrorResponse extends ApiResponse {
         super(httpStatus.INTERNAL_SERVER_ERROR, message);
     }
 };
+
+export class DataValidationErrorResponse extends ApiResponse {
+    private errors: IValidationError[]
+    
+    constructor(error: MongooseValidationError, message: string = 'Data Validation error'){
+        super(httpStatus.BAD_REQUEST, message);
+        this.errors = error.errors;
+    }
+}
