@@ -32,5 +32,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 })
 
 app.listen(port, _ => {
-    console.log(`Server started on localhost:${port}`)
+    console.log(`Server started on http://localhost:${port}`)
 })
