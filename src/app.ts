@@ -1,15 +1,13 @@
 import express, {Request, Response, NextFunction} from 'express';
 import bodyParser from 'body-parser';
 import httpStatus from 'http-status-codes';
-import {port, environment} from './config';      // Load ENV variables
-import './database';                             // Initialize mongodb
-import routesV1 from './routes/v1';
 import { ApiError, NotFoundError } from './core/ApiError';
+import {port, environment} from './config';      // Load ENV variables
+import routesV1 from './routes/v1';
 
 const app = express();
 
 app.use(bodyParser.json())
-
 app.use('/api/v1', routesV1);
 
 // Raise NotFound Error if no route matches
@@ -26,6 +24,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
         }
 
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.getStatusText(httpStatus.INTERNAL_SERVER_ERROR),
             message: err.message
         })
     }

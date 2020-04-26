@@ -3,13 +3,13 @@ import {config} from 'dotenv';
 // Load ENV variables
 config();
 
-export const db = {
-    host: process.env.DATABASE_HOST,
-    name: process.env.DATABASE_NAME,
-    port: process.env.DATABASE_PORT,
-    user: process.env.DATABASE_USER,
-    pass: process.env.DATABASE_PASS
+export const twitter = {
+    consumer_key: process.env.TWITTER_APP_API_KEY,
+    consumer_secret: process.env.TWITTER_APP_API_SECRET,
+    access_token_key: process.env.TWITTER_MYACC_ACCESS_TOKEN,
+    access_token_secret: process.env.TWITTER_MYACC_ACCESS_TOKEN_SECRET
 }
+
 
 export const environment = process.env.NODE_ENV
 export const port = process.env.SERVER_PORT
