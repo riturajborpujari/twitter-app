@@ -1,8 +1,8 @@
-import express, {Request, Response, NextFunction} from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import httpStatus from 'http-status-codes';
 import { ApiError, NotFoundError } from './core/ApiError';
-import {port, environment} from './config';      // Load ENV variables
+import { port, environment } from './config';      // Load ENV variables
 import routesV1 from './routes/v1';
 
 const app = express();
@@ -15,11 +15,11 @@ app.use((req, res, next) => next(new NotFoundError()))
 
 // Middleware Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    if(err instanceof ApiError){
+    if (err instanceof ApiError) {
         ApiError.handle(err, res);
     }
     else {
-        if(environment === 'development'){
+        if (environment === 'development') {
             console.error(err)
         }
 
