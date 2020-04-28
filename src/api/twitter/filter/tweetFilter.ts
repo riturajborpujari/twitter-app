@@ -38,16 +38,19 @@ const FilterTweet = (tweet: any): ITweet => {
             status_id_str: in_reply_to_status_id_str,
             user_id_str: in_reply_to_user_id_str,
             screen_name: in_reply_to_screen_name
-        },
-        original_status: !retweeted_status? null : FilterTweet(retweeted_status)
+        }
     }
 
     if(entities){
         filteredTweet.entities = FilterEntities(entities);
     }
 
-    if(is_quote_status){
-        filteredTweet.original_status = FilterTweet(tweet.quoted_status);
+    if(tweet.retweeted_status){
+        filteredTweet.original_retweeted_status = FilterTweet(tweet.retweeted_status);
+    }
+
+    if(tweet.quoted_status){
+        filteredTweet.original_quoted_status = FilterTweet(tweet.quoted_status);
     }
 
     return filteredTweet;

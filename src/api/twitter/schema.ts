@@ -25,7 +25,8 @@ export interface ITweet {
         hastags?: IHashtag[],
         user_mentions?: IUserMention[]
     },
-    original_status?: ITweet
+    original_retweeted_status?: ITweet,
+    original_quoted_status?: ITweet
 };
 
 export interface IUser {
