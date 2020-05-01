@@ -4,12 +4,12 @@ import { ITweet } from './schema';
 import { NotFoundError } from '../../core/ApiError';
 
 export interface ITweetsResponse{
-    tweets: ITweet[],
-    search_metadata: any
+    tweets: ITweet[],       // an array of tweets in our schema
+    search_metadata: any    // metadata as provided in twitter response
 };
 
 export interface ITweetWithRepliesResponse {
-    tweets: ITweet[],
+    tweet: ITweet,
     replies: ITweet[],
     search_metadata: any
 };
@@ -22,8 +22,10 @@ export default class TwitterClient {
     }
 
     async searchTweets(params: Twitter.RequestParams) : Promise<ITweetsResponse>{
+        // Search tweets with the given params
         let response = await this.client.get('search/tweets', params);
-
+        
+        // Filter tweets to fit our schema
         let tweets: ITweet[] = await FilterTweets(response.statuses);
 
         return {tweets, search_metadata: response.search_metadata};
@@ -36,6 +38,7 @@ export default class TwitterClient {
     async getMinimalTweets(ids: string): Promise<ITweetsResponse> {
         let response = await this.client.get('statuses/lookup', {id: ids, include_entities: false});
 
+        // Filter tweets to fit our schema
         let tweets: ITweet[] = await FilterTweets(<any[]>response);
         if(tweets.length < 1){
             // no tweet found
@@ -48,6 +51,7 @@ export default class TwitterClient {
     async getExtendedTweets(ids: string): Promise<ITweetsResponse> {
         let response = await this.client.get(`statuses/lookup`, {id: ids, tweet_mode:'extended'});
 
+        // Filter tweets to fit our schema
         let tweets: ITweet[] = await FilterTweets(<any[]>response);
         if(tweets.length < 1){
             // no tweet found
@@ -60,11 +64,12 @@ export default class TwitterClient {
     async getTweetWithReplies(id: string): Promise<ITweetWithRepliesResponse> {
         let minimalTweets = await this.getMinimalTweets(id);
 
+        // select the first tweet and load replies
         let tweet = minimalTweets.tweets[0];
         let repliesResp = await this.loadRepliesForTweet(tweet);
 
         return {
-            tweets: minimalTweets.tweets, 
+            tweet: minimalTweets.tweets[0], 
             replies: repliesResp.tweets, 
             search_metadata: repliesResp.search_metadata
         };
@@ -72,6 +77,8 @@ export default class TwitterClient {
 
     private async loadRepliesForTweet(tweet: ITweet) : Promise<ITweetsResponse> {
         let {user, id_str} = tweet;
+
+        // load all replies to this user
         let replies = await this.searchTweets({q: `to:${user.screen_name}`, include_entities: false});
 
         // select only thos replies done to this tweet
