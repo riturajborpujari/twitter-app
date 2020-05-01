@@ -24,7 +24,7 @@ router.post('/search_tweets', AsyncHandler(async (req, res) => {
         ...rest
     });
 
-    return new SuccessResponse(data).send(res);
+    return new SuccessResponse(data, 'Search response').send(res);
 }))
 
 
@@ -41,7 +41,7 @@ router.post('/search_tweets_by_user', AsyncHandler(async (req, res) => {
 
     let data = await twitter.searchTweets({q: `from:${screen_name}`, ...rest})
 
-    return new SuccessResponse(data).send(res);
+    return new SuccessResponse(data, `Tweets by ${screen_name}`).send(res);
 }))
 
 router.post('/get_extended_tweets', AsyncHandler(async (req, res) => {
@@ -53,7 +53,31 @@ router.post('/get_extended_tweets', AsyncHandler(async (req, res) => {
 
     let data = await twitter.getExtendedTweets(ids);
 
-    return new SuccessResponse(data).send(res);
+    return new SuccessResponse(data, 'Extended tweets').send(res);
+}))
+
+router.post('/get_minimal_tweets', AsyncHandler(async (req, res) => {
+    let {ids} = req.body;
+
+    if(!ids){
+        throw new BadRequestError("Required tweet ids: 'ids'");
+    }
+
+    let data = await twitter.getMinimalTweets(ids);
+
+    return new SuccessResponse(data, 'Minimal tweets').send(res);
+}))
+
+router.post('/get_tweet_with_replies', AsyncHandler(async (req, res) => {
+    let {id} = req.body;
+
+    if(!id){
+        throw new BadRequestError("Required tweet id: 'id'");
+    }
+
+    let data = await twitter.getTweetWithReplies(id);
+
+    return new SuccessResponse(data, 'Tweet with replies').send(res);
 }))
 
 export default router;
