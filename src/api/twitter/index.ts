@@ -77,17 +77,53 @@ export default class TwitterClient {
 
     private async loadRepliesForTweet(tweet: ITweet) : Promise<ITweetsResponse> {
         let {user, id_str} = tweet;
+        
+        // save tweet's post datestamp
+        let tweet_at = new Date(tweet.created_at);
 
         // load all replies to this user
-        let replies = await this.searchTweets({q: `to:${user.screen_name}`, include_entities: false});
+        let allRepliesToTweet:ITweet[] = [];
+        let replies:ITweetsResponse;
+        let max_id = null;
 
-        // select only thos replies done to this tweet
-        let repliesToTweet = replies.tweets.filter(tweet => {
-            if(tweet.in_reply_to.status_id_str === id_str){
-                return true;
+        do {
+            // load all replies to user
+            replies = await this.searchTweets({
+                q: `to:${user.screen_name}`, 
+                max_id,
+                include_entities: false,
+                count: 100
+            });
+            
+            // select only replies done to THIS tweet
+            replies.tweets.forEach(tweet => {
+                if(tweet.in_reply_to.status_id_str === id_str){
+                    allRepliesToTweet.push(tweet);
+                }
+            })
+            
+            // Next results logic
+            if(replies.search_metadata.next_results){
+                let next = <string>replies.search_metadata.next_results;
+
+                let start_index = next.indexOf('max_id=') + 7, last_index = next.indexOf('&q');
+                max_id = next.slice(start_index, last_index);
             }
-        })
+            else{
+                // BREAK loop if no more results exist
+                break;
+            }
 
-        return {tweets: repliesToTweet, search_metadata: replies.search_metadata};
+            // get last reply tweet's post datestamp
+            let last_reply_at = new Date(replies.tweets[replies.tweets.length - 1].created_at);
+
+            // BREAK loop if last reply is earlier than tweet itself
+            if(last_reply_at.valueOf() < tweet_at.valueOf()){
+                break;
+            }
+            
+        } while (true);
+
+        return {tweets: allRepliesToTweet, search_metadata: replies.search_metadata};
     }
 };
