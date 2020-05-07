@@ -48,7 +48,7 @@ router.post('/get_extended_tweets', AsyncHandler(async (req, res) => {
     let {ids} = req.body;
 
     if(!ids){
-        throw new BadRequestError(`Required tweet ids: 'ids'`);
+        throw new BadRequestError(`Required comma separated tweet ids: 'ids'`);
     }
 
     let data = await twitter.getExtendedTweets(ids);
@@ -60,7 +60,7 @@ router.post('/get_minimal_tweets', AsyncHandler(async (req, res) => {
     let {ids} = req.body;
 
     if(!ids){
-        throw new BadRequestError("Required tweet ids: 'ids'");
+        throw new BadRequestError("Required comma separated tweet ids: 'ids'");
     }
 
     let data = await twitter.getMinimalTweets(ids);
