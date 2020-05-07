@@ -10,7 +10,7 @@ This is a Node.js app Express app built using Typescript. It allows accessing th
 ## Running this app
 
 1. Create an environment file from example `cp .env.example .env`
-2. Modify the env variables for your twitter app
+2. Modify the env variables for your twitter app in file `.env`
     * TWITTER_APP_API_KEY this is your twitter app api key
     * TWITTER_APP_API_SECRET this is your twitter app api secret
     * TWITTER_APP_BEARER_TOKEN=this is your twitter app bearer token
