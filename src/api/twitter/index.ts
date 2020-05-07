@@ -8,10 +8,8 @@ export interface ITweetsResponse{
     search_metadata: any    // metadata as provided in twitter response
 };
 
-export interface ITweetWithRepliesResponse {
-    tweet: ITweet,
-    replies: ITweet[],
-    search_metadata: any
+export interface ITweetResponse{
+    tweet: ITweet
 };
 
 export default class TwitterClient {
@@ -61,17 +59,18 @@ export default class TwitterClient {
         return {tweets, search_metadata: response.search_metadata};
     }
 
-    async getTweetWithReplies(id: string): Promise<ITweetWithRepliesResponse> {
-        let minimalTweets = await this.getMinimalTweets(id);
+    async getTweetWithReplies(id: string): Promise<ITweetResponse> {
+        let extendedTweets = await this.getExtendedTweets(id);
 
         // select the first tweet and load replies
-        let tweet = minimalTweets.tweets[0];
+        let tweet = extendedTweets.tweets[0];
         let repliesResp = await this.loadRepliesForTweet(tweet);
 
+        // assign replies to tweet
+        tweet.replies = repliesResp.tweets;
+
         return {
-            tweet: minimalTweets.tweets[0], 
-            replies: repliesResp.tweets, 
-            search_metadata: repliesResp.search_metadata
+            tweet
         };
     }
 
@@ -123,6 +122,7 @@ export default class TwitterClient {
             }
             
         } while (true);
+        console.log(`Found ${allRepliesToTweet.length} replies.`);
 
         return {tweets: allRepliesToTweet, search_metadata: replies.search_metadata};
     }

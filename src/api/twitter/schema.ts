@@ -26,7 +26,9 @@ export interface ITweet {
         user_mentions?: IUserMention[]
     },
     original_retweeted_status?: ITweet,
-    original_quoted_status?: ITweet
+    original_quoted_status?: ITweet,
+
+    replies?: ITweet[]
 };
 
 export interface IUser {
