@@ -2,6 +2,7 @@ import Twitter from 'twitter';
 import FilterTweets from './filter/tweetFilter';
 import { ITweet } from './schema';
 import { NotFoundError } from '../../core/ApiError';
+import PaginationController from './paginationController';
 
 export interface ITweetsResponse{
     tweets: ITweet[],       // an array of tweets in our schema
@@ -21,7 +22,8 @@ export default class TwitterClient {
 
     async searchTweets(params: Twitter.RequestParams) : Promise<ITweetsResponse>{
         // Search tweets with the given params
-        let response = await this.client.get('search/tweets', params);
+        let response = await this.client.get('search/tweets', 
+            PaginationController.setPaginationParams(params));
         
         // Filter tweets to fit our schema
         let tweets: ITweet[] = await FilterTweets(response.statuses);
@@ -101,12 +103,12 @@ export default class TwitterClient {
                 }
             })
             
-            // Next results logic
+            // Get max_id from next_results
             if(replies.search_metadata.next_results){
                 let next = <string>replies.search_metadata.next_results;
-
-                let start_index = next.indexOf('max_id=') + 7, last_index = next.indexOf('&q');
-                max_id = next.slice(start_index, last_index);
+                
+                // Use PaginationController to get max_id
+                max_id = PaginationController.getParameterFromQueryString(next, 'max_id');
             }
             else{
                 // BREAK loop if no more results exist
@@ -122,8 +124,8 @@ export default class TwitterClient {
             }
             
         } while (true);
-        console.log(`Found ${allRepliesToTweet.length} replies.`);
 
         return {tweets: allRepliesToTweet, search_metadata: replies.search_metadata};
     }
 };
+
