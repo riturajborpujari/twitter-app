@@ -39,7 +39,9 @@ router.post('/search_tweets_by_user', AsyncHandler(async (req, res) => {
         rest.count = 5;
     }
 
-    let data = await twitter.searchTweets({q: `from:${screen_name}`, ...rest})
+    q = `${q} from:${screen_name}`;
+
+    let data = await twitter.searchTweets({q, ...rest})
 
     return new SuccessResponse(data, `Tweets by ${screen_name}`).send(res);
 }))
