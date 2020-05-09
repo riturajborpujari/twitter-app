@@ -1,8 +1,8 @@
 {
-  "name": "project-activity-manager",
+  "name": "twitter-app",
   "version": "1.0.0",
-  "description": "A tool for managing projects, and its associated tasks in an effecient manner",
-  "main": "src/app.js",
+  "description": "An app for using Twitter API: searching tweets, loading replies",
+  "main": "src/app.ts",
   "author": "Rituraj Borpujari",
   "license": "MIT",
   "dependencies": {
