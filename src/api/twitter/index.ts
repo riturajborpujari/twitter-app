@@ -31,10 +31,6 @@ export default class TwitterClient {
         return {tweets, search_metadata: response.search_metadata};
     }
 
-    async postTweet(status: string) : Promise<Twitter.ResponseData>{
-        return this.client.post('status/update', {status});
-    }
-
     async getMinimalTweets(ids: string): Promise<ITweetsResponse> {
         let response = await this.client.get('statuses/lookup', {id: ids, include_entities: false});
 
