@@ -22,7 +22,7 @@ export interface ITweet {
     },
     entities?: {
         urls?: IUrl[],
-        hastags?: IHashtag[],
+        hashtags?: IHashtag[],
         user_mentions?: IUserMention[]
     },
     original_retweeted_status?: ITweet,
