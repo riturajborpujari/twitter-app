@@ -72,7 +72,7 @@ export default class TwitterClient {
         };
     }
 
-    private async loadRepliesForTweet(tweet: ITweet) : Promise<ITweetsResponse> {
+    public async loadRepliesForTweet(tweet: ITweet) : Promise<ITweetsResponse> {
         let {user, id_str} = tweet;
         
         // save tweet's post datestamp
