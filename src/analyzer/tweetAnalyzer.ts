@@ -1,31 +1,9 @@
 import {ITweet} from '../api/twitter/schema';
+import * as AnalysisSchema from './schema';
+import MinifyTweet from './common/minifyTweet';
 
-export interface ITweetAnalysisReport{
-    replies:{
-        count: number,
-        distinctLocations: string[],
-        activityTimeline: number[],
-        activityGap: ITimeValue,
-        minActivityGap: ITimeValue,
-        distinctUsers: string[],
-        most_popular_reply: ITweet,
-        most_shared_reply: ITweet
-    },
-    meta: {
-        favorite_count: number,
-        retweet_count: number,
-        lang: string
-    },
-    tweet: ITweet
-};
-
-export interface ITimeValue {
-    value: number,
-    denomination: string
-}
-
-export default async function AnalyzeTweet(tweet: ITweet): Promise<ITweetAnalysisReport>{
-    let report:ITweetAnalysisReport = {
+export default async function AnalyzeTweet(tweet: ITweet): Promise<AnalysisSchema.ITweetAnalysisReport>{
+    let report:AnalysisSchema.ITweetAnalysisReport = {
         meta: {
             favorite_count: tweet.meta.favorite_count,
             retweet_count: tweet.meta.retweet_count,
@@ -99,10 +77,10 @@ export default async function AnalyzeTweet(tweet: ITweet): Promise<ITweetAnalysi
 
     // add most popular and most retweeted reply
     if(popularIndex !== -1){
-        report.replies.most_popular_reply = tweet.replies[popularIndex];
+        report.replies.most_popular_reply = MinifyTweet(tweet.replies[popularIndex]);
     }
     if(mostRTsIndex != -1){
-        report.replies.most_shared_reply = tweet.replies[mostRTsIndex];
+        report.replies.most_shared_reply = MinifyTweet(tweet.replies[mostRTsIndex]);
     }
 
     // calculate average activity Gap
@@ -115,13 +93,13 @@ export default async function AnalyzeTweet(tweet: ITweet): Promise<ITweetAnalysi
 
     if(report.replies.count > 0){
         delete tweet.replies;
-        report.tweet = tweet;
+        report.tweet = MinifyTweet(tweet);
     }
 
     return report;
 }
 
-const GetTimeValue = (timeMs: number): ITimeValue => {
+const GetTimeValue = (timeMs: number): AnalysisSchema.ITimeValue => {
     timeMs = parseInt((timeMs / 1000).toFixed(0));      // convert ms to seconds
     let denomination:string = '';
 
