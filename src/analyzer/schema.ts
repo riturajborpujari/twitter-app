@@ -8,8 +8,8 @@ export interface ITweetAnalysisReport{
         activityGap: ITimeValue,
         minActivityGap: ITimeValue,
         distinctUsers: string[],
-        most_popular_reply: IMinifiedTweet,
-        most_shared_reply: IMinifiedTweet
+        most_popular_reply?: IMinifiedTweet,
+        most_shared_reply?: IMinifiedTweet
     },
     meta: {
         favorite_count: number,

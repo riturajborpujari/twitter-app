@@ -21,9 +21,7 @@ export default async function AnalyzeTweet(tweet: ITweet): Promise<AnalysisSchem
             minActivityGap: {
                 value: 0,
                 denomination: ''
-            },
-            most_popular_reply: null,
-            most_shared_reply: null
+            }
         },
         tweet: null
     };
