@@ -1,7 +1,7 @@
 import * as Schema from '../api/twitter/schema';
 
-export interface ITweetAnalysisReport{
-    replies:{
+export interface ITweetAnalysisReport {
+    replies: {
         count: number,
         distinctLocations: string[],
         activityTimeline: number[],
@@ -24,7 +24,7 @@ export interface ITimeValue {
     denomination: string
 };
 
-export interface IMinifiedUser{
+export interface IMinifiedUser {
     screen_name: string,
     name: string,
     created_at: string,
@@ -36,35 +36,41 @@ export interface IMinifiedUser{
     }
 };
 
-export interface IMinifiedTweet{
+export interface IMinifiedTweet {
     created_at: string,
     text: string,
     entities?: {
         hashtags?: Schema.IHashtag[],
         user_mentions?: Schema.IUserMention[]
     }
-    engagement:{
+    engagement: {
         favorite_count: number,
         retweet_count: number
     },
-    user?:IMinifiedUser
+    user?: IMinifiedUser
 };
 
-export interface IUserAnalysisReport{
-    tweets: {
-        count: number,
-        activity_timeline: IMinifiedTweet[],
-        most_mentions: string[],
-        consistent_follower: IMinifiedUser[],
-        most_popular_tweet: IMinifiedTweet,
-        most_shared_tweet: IMinifiedTweet
-    },
-    mentions: {
-        distinct_locations: string[],
-        mention_activity_timeline: [],
-        consistent_promoters: IMinifiedUser[],
-        most_popular_mention: IMinifiedTweet,
-        most_retweeted_mention: IMinifiedTweet
-    },
+export interface IUserTweetsReport {
+    count: number,
+    activity_timeline: IMinifiedTweet[],
+    consistent_followers: IMinifiedUser[],
+    most_popular_tweet: IMinifiedTweet,
+    most_retweeted_tweet: IMinifiedTweet
+};
+
+export interface IUserMentionsReport {
+    distinct_locations: string[],
+    mentions_activity_timeline: number[],
+    consistent_promoters: {
+        promoter: IMinifiedUser,
+        mentions_count: number
+    }[],
+    most_popular_mention: IMinifiedTweet,
+    most_retweeted_mention: IMinifiedTweet
+}
+
+export interface IUserAnalysisReport {
+    tweet_report: IUserTweetsReport,
+    mentions_report: IUserMentionsReport,
     user: Schema.IUser
 };
