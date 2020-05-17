@@ -7,6 +7,8 @@ import {twitter} from '../config';
 
 const apiClient = new TwitterAPI(twitter);
 
+const MAX_MENTIONS = 1000;
+
 export default async function AnalyzeUser(screen_name: string) : Promise<AnalysisSchema.IUserAnalysisReport>{
     let report:AnalysisSchema.IUserAnalysisReport = {
         tweet_report: null,
@@ -15,19 +17,34 @@ export default async function AnalyzeUser(screen_name: string) : Promise<Analysi
     };
 
     // Searching user tweets
-    console.log('Searching user tweets...');
     let {tweets:user_tweets} = await apiClient.searchTweets({
         q: `from:${screen_name}`,
         count: 100
     });
-    console.log(`Found ${user_tweets.length} tweets.`)
 
     // Searching user mentions
     console.log('Searching user mentions...');
-    let {tweets: user_mentions, search_metadata} = await apiClient.searchTweets({
-        q: `@${screen_name}`,
-        count: 100
-    });
+    let user_mentions: Schema.ITweet[] = [];
+    let next_results:string = null;
+
+    while(user_mentions.length < MAX_MENTIONS){
+        let {tweets, search_metadata} = await apiClient.searchTweets({
+            q: `@${screen_name}`,
+            count: 100,
+            next_results
+        });
+        console.log(`Loaded ${tweets.length} tweets.`);
+
+        // merge tweets into user_mentions[]
+        user_mentions = [...user_mentions, ...tweets];
+
+        if(!search_metadata.next_results){
+            console.log('No more tweets. Breaking loop...');
+            break;
+        }
+
+        next_results = search_metadata.next_results;
+    }
     console.log(`Found ${user_mentions.length} tweets.`)
 
     if(user_tweets.length){
@@ -57,7 +74,6 @@ const AnalyzeUserTweets = async(tweets: Schema.ITweet[]): Promise<AnalysisSchema
     };
 
     let count: number = 0, activity_timeline: AnalysisSchema.IMinifiedTweet[] = [];
-    let consistent_followers: AnalysisSchema.IMinifiedUser[] = [];
     let most_popular_tweet: AnalysisSchema.IMinifiedTweet = null, mostFavs = 0;
     let most_retweeted_tweet: AnalysisSchema.IMinifiedTweet = null, mostRts = 0;
 
@@ -81,7 +97,6 @@ const AnalyzeUserTweets = async(tweets: Schema.ITweet[]): Promise<AnalysisSchema
     })
 
     report.activity_timeline = activity_timeline;
-    report.consistent_followers = consistent_followers;
     report.count = count;
     report.most_popular_tweet = most_popular_tweet;
     report.most_retweeted_tweet = most_retweeted_tweet;
@@ -144,7 +159,7 @@ const AnalyzeUserMentions = (mentions: Schema.ITweet[]): AnalysisSchema.IUserMen
 
     report.consistent_promoters = [];
     promoter_mention_counts.forEach((mentions_count, index) => {
-        if(mentions_count > 0){
+        if(mentions_count > 1){
             report.consistent_promoters.push({
                 promoter: promoter_users[index],
                 mentions_count
