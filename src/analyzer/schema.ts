@@ -53,7 +53,7 @@ export interface IMinifiedTweet {
 export interface IUserTweetsReport {
     count: number,
     activity_timeline: IMinifiedTweet[],
-    consistent_followers: IMinifiedUser[],
+    consistent_followers?: IMinifiedUser[],
     most_popular_tweet: IMinifiedTweet,
     most_retweeted_tweet: IMinifiedTweet
 };
@@ -67,7 +67,7 @@ export interface IUserMentionsReport {
     }[],
     most_popular_mention: IMinifiedTweet,
     most_retweeted_mention: IMinifiedTweet
-}
+};
 
 export interface IUserAnalysisReport {
     tweet_report: IUserTweetsReport,
